@@ -161,6 +161,13 @@ private:
 	void Cmd_SaveInfluxLink(WebEmSession & session, const request& req, Json::Value &root);
 	void Cmd_DeleteInfluxLink(WebEmSession & session, const request& req, Json::Value &root);
 	void Cmd_GetDevicesForInfluxLink(WebEmSession & session, const request& req, Json::Value &root);
+#ifdef WITH_HOMEKIT
+	void Cmd_SaveHomeKitLinkConfig(WebEmSession & session, const request& req, Json::Value &root);
+	void Cmd_GetHomeKitLinkConfig(WebEmSession & session, const request& req, Json::Value &root);
+	void Cmd_GetHomeKitLinks(WebEmSession & session, const request& req, Json::Value &root);
+	void Cmd_SaveHomeKitLink(WebEmSession & session, const request& req, Json::Value &root);
+	void Cmd_DeleteHomeKitLink(WebEmSession & session, const request& req, Json::Value &root);
+#endif // WITH_HOMEKIT
 	void Cmd_GetDeviceValueOptions(WebEmSession & session, const request& req, Json::Value &root);
 	void Cmd_GetDeviceValueOptionWording(WebEmSession & session, const request& req, Json::Value &root);
 	void Cmd_DeleteUserVariable(WebEmSession & session, const request& req, Json::Value &root);

@@ -465,6 +465,14 @@ namespace http {
 			RegisterCommandCode("saveinfluxlink", boost::bind(&CWebServer::Cmd_SaveInfluxLink, this, _1, _2, _3));
 			RegisterCommandCode("deleteinfluxlink", boost::bind(&CWebServer::Cmd_DeleteInfluxLink, this, _1, _2, _3));
 
+#ifdef WITH_HOMEKIT
+			RegisterCommandCode("savehomekitlinkconfig", boost::bind(&CWebServer::Cmd_SaveHomeKitLinkConfig, this, _1, _2, _3));
+			RegisterCommandCode("gethomekitlinkconfig", boost::bind(&CWebServer::Cmd_GetHomeKitLinkConfig, this, _1, _2, _3));
+			RegisterCommandCode("gethomekitlinks", boost::bind(&CWebServer::Cmd_GetHomeKitLinks, this, _1, _2, _3));
+			RegisterCommandCode("savehomekitlink", boost::bind(&CWebServer::Cmd_SaveHomeKitLink, this, _1, _2, _3));
+			RegisterCommandCode("deletehomekitlink", boost::bind(&CWebServer::Cmd_DeleteHomeKitLink, this, _1, _2, _3));
+#endif // WITH_HOMEKIT
+
 			RegisterCommandCode("savehttplinkconfig", boost::bind(&CWebServer::Cmd_SaveHttpLinkConfig, this, _1, _2, _3));
 			RegisterCommandCode("gethttplinkconfig", boost::bind(&CWebServer::Cmd_GetHttpLinkConfig, this, _1, _2, _3));
 			RegisterCommandCode("gethttplinks", boost::bind(&CWebServer::Cmd_GetHttpLinks, this, _1, _2, _3));

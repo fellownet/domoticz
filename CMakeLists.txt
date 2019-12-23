@@ -187,6 +187,16 @@ IF (INCLUDE_SPI)
 	ENDIF (HAVE_LINUX_SPI_H)
 ENDIF (INCLUDE_SPI)
 
+option(WITH_HOMEKIT "Enable HomeKit support" YES)
+if(WITH_HOMEKIT)
+  message(STATUS "Building with HomeKit support")
+  add_subdirectory(HomeKit)
+  get_directory_property(HOMEKIT_LIBRARIES DIRECTORY HomeKit DEFINITION HOMEKIT_LIBRARIES)
+  get_directory_property(HOMEKIT_INCLUDE_DIRS DIRECTORY HomeKit DEFINITION HOMEKIT_INCLUDE_DIRS)
+  include_directories(${HOMEKIT_INCLUDE_DIRS})
+  add_definitions(-DWITH_HOMEKIT)
+endif(WITH_HOMEKIT)
+
 #set(CMAKE_EXE_LINKER_FLAGS "-static")
 
 # Macro for setting up precompiled headers. Usage:
@@ -238,6 +248,7 @@ MACRO(ADD_PRECOMPILED_HEADER _targetName _input)
 
   IF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-switch -Wno-parentheses-equality -Wno-deprecated-declarations -Wno-tautological-compare -Wno-unused-value -Wno-comment -Wno-unsequenced -Wno-logical-op-parentheses -Wno-literal-conversion")
+    add_definitions( -DDARWIN )
   ENDIF()
   IF(CMAKE_SYSTEM_NAME STREQUAL "OpenBSD")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
@@ -339,6 +350,7 @@ push/GooglePubSubPush.cpp
 push/HttpPush.cpp
 push/InfluxPush.cpp
 push/WebsocketPush.cpp
+push/HomeKitPush.cpp
 httpclient/HTTPClient.cpp
 httpclient/UrlEncode.cpp
 hardware/1Wire.cpp
@@ -736,7 +748,7 @@ else()
   message(STATUS "Not found telldus-core (telldus-core.h), not adding tellstick support")
 endif (TELLDUSCORE_INCLUDE)
 
-target_link_libraries(domoticz ${Boost_LIBRARIES} ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES} ${CURL_LIBRARIES} pthread ${MQTT_LIBRARIES} ${LUA_LIBRARIES} ${SQLite_LIBRARIES} ${CMAKE_DL_LIBS} ${TELLDUS_LIBRARIES})
+target_link_libraries(domoticz ${Boost_LIBRARIES} ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES} ${HOMEKIT_LIBRARIES} ${CURL_LIBRARIES} pthread ${MQTT_LIBRARIES} ${LUA_LIBRARIES} ${SQLite_LIBRARIES} ${CMAKE_DL_LIBS} ${TELLDUS_LIBRARIES})
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   target_link_libraries(domoticz -lresolv)

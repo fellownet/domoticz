@@ -10,6 +10,9 @@
 #include "../push/HttpPush.h"
 #include "../push/InfluxPush.h"
 #include "../push/GooglePubSubPush.h"
+#ifdef WITH_HOMEKIT
+#include "../push/HomeKitPush.h"
+#endif // WITH_HOMEKIT
 
 #include "../httpclient/HTTPClient.h"
 #include "../webserver/Base64.h"
@@ -188,7 +191,9 @@ CFibaroPush m_fibaropush;
 CGooglePubSubPush m_googlepubsubpush;
 CHttpPush m_httppush;
 CInfluxPush m_influxpush;
-
+#ifdef WITH_HOMEKIT
+CHomeKitPush m_homekitpush;
+#endif // WITH_HOMEKIT
 
 namespace tcp {
 	namespace server {
@@ -1133,6 +1138,9 @@ bool MainWorker::Start()
 	m_httppush.Start();
 	m_influxpush.Start();
 	m_googlepubsubpush.Start();
+#ifdef WITH_HOMEKIT
+	m_homekitpush.Start();
+#endif
 #ifdef PARSE_RFXCOM_DEVICE_LOG
 	if (m_bStartHardware == false)
 		m_bStartHardware = true;
@@ -1218,6 +1226,9 @@ bool MainWorker::Stop()
 		m_httppush.Stop();
 		m_influxpush.Stop();
 		m_googlepubsubpush.Stop();
+#ifdef WITH_HOMEKIT
+		m_homekitpush.Stop();
+#endif // WITH_HOMEKIT
 #ifdef ENABLE_PYTHON
 		m_pluginsystem.StopPluginSystem();
 #endif
