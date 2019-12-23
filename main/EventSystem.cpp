@@ -3754,6 +3754,7 @@ bool CEventSystem::ScheduleEvent(int deviceID, const std::string &Action, bool i
 	std::string previousState = m_devicestates[deviceID].nValueWording;
 	int previousLevel = calculateDimLevel(deviceID, m_devicestates[deviceID].lastLevel);
 	int level = 0;
+	_tColor color = NoColor;
 	devicestatesMutexLock.unlock();
 
 	_tActionParseResults oParseResults;
@@ -3763,6 +3764,11 @@ bool CEventSystem::ScheduleEvent(int deviceID, const std::string &Action, bool i
 
 	if (oParseResults.sCommand.substr(0, 9) == "Set Level") {
 		level = calculateDimLevel(deviceID, atoi(oParseResults.sCommand.substr(10).c_str()));
+		oParseResults.sCommand = oParseResults.sCommand.substr(0, 9);
+	}
+	else if (oParseResults.sCommand.substr(0, 9) == "Set Color") {
+		color = _tColor(oParseResults.sCommand.substr(10));
+		level = color.level > -1 ? color.level : previousLevel;
 		oParseResults.sCommand = oParseResults.sCommand.substr(0, 9);
 	}
 	else if (oParseResults.sCommand.substr(0, 10) == "Set Volume") {
@@ -3889,7 +3895,7 @@ bool CEventSystem::ScheduleEvent(int deviceID, const std::string &Action, bool i
 
 		}
 		else {
-			tItem = _tTaskItem::SwitchLightEvent(fDelayTime, deviceID, oParseResults.sCommand, level, NoColor, eventName);
+			tItem = _tTaskItem::SwitchLightEvent(fDelayTime, deviceID, oParseResults.sCommand, level, color, eventName);
 		}
 		m_sql.AddTaskItem(tItem);
 #ifdef _DEBUG
