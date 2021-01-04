@@ -183,6 +183,10 @@ class COpenZWave : public ZWaveBase
 	bool m_bNightlyNetworkHeal;
 	bool m_bAeotecBlinkingMode;
 	int m_LastAlarmTypeReceived;
+
+	// BOB
+	std::map<uint8_t, uint8_t> m_pendingUpdates;
+	mutable std::mutex m_pendingUpdatesMutex;
 };
 
 #endif // WITH_OPENZWAVE

@@ -1254,6 +1254,20 @@ bool COpenZWave::SwitchLight(_tZWaveDevice* pDevice, const int instanceID, const
 		OpenZWave::ValueID vID(0, 0, OpenZWave::ValueID::ValueGenre_Basic, 0, 0, 0, OpenZWave::ValueID::ValueType_Bool);
 		uint8_t svalue = (uint8_t)value;
 
+
+		// BOB add to the pending update queue (in micasa we're waiting 8 seconds, probably needs to be lower)
+		std::lock_guard<std::mutex> pendingUpdatesLock( m_pendingUpdatesMutex );
+		m_pendingUpdates[pDevice->nodeID] = svalue;
+		std::thread thread_object([&](int nodeId) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+			std::lock_guard<std::mutex> pendingUpdatesLock( m_pendingUpdatesMutex );
+			m_pendingUpdates.erase(nodeId);
+			_log.Log(LOG_ERROR, "------------------------- PLAAP");
+		}, pDevice->nodeID); 
+		thread_object.detach();
+		_log.Log(LOG_ERROR, "------------------------- POEKOE");
+
+
 		if ((pDevice->devType == ZWaveBase::ZDTYPE_SWITCH_NORMAL) || (bHandleAsBinary))
 		{
 			//On/Off device
@@ -3316,7 +3330,7 @@ void COpenZWave::UpdateValue(NodeInfo* pNode, const OpenZWave::ValueID& vID)
 		}
 	}
 	break;
-	case ZDTYPE_SWITCH_DIMMER:
+	case ZDTYPE_SWITCH_DIMMER: {
 		if (vLabel.find("Level") == std::string::npos)
 			return;
 		if (vType != OpenZWave::ValueID::ValueType_Byte)
@@ -3327,8 +3341,29 @@ void COpenZWave::UpdateValue(NodeInfo* pNode, const OpenZWave::ValueID& vID)
 		{
 			return; //dont send same value
 		}
+
+// BOB
+
+		std::lock_guard<std::mutex> pendingUpdatesLock( m_pendingUpdatesMutex );
+		auto pendingUpdate = m_pendingUpdates.find( NodeID );
+		if (pendingUpdate != m_pendingUpdates.end())
+		{
+			if (byteValue != pendingUpdate->second)
+			{
+				_log.Log(LOG_ERROR, "------------------------- FOUT");
+				//m_pManager->RefreshValue(vID);
+				return; // dont send wrong value
+			}
+			else
+			{
+				_log.Log(LOG_ERROR, "------------------------- GOED");
+				m_pendingUpdates.erase(NodeID);
+			}
+		}
+
 		pDevice->intvalue = byteValue;
 		break;
+	}
 	case ZDTYPE_SENSOR_POWER:
 		if (vType != OpenZWave::ValueID::ValueType_Decimal)
 			return;
