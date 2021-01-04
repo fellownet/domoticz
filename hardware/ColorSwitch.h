@@ -31,7 +31,7 @@ enum ColorMode
 struct _tColor
 {
 	ColorMode mode;
-	// uint8_t level; // Range:0..255, Master brightness (potential for future use)
+	uint8_t level; // Range:0..255, Master brightness
 	uint8_t t;  // Range:0..255, Color temperature (warm / cold ratio, 0 is coldest, 255 is warmest)
 	uint8_t r;  // Range:0..255, Red level
 	uint8_t g;  // Range:0..255, Green level

@@ -6,7 +6,7 @@
 
 _tColor::_tColor()
 {
-	//level = 0;
+	level = -1;
 	t = r = g = b = cw = ww = 0;
 	mode = ColorModeNone;
 }
@@ -24,7 +24,7 @@ _tColor::_tColor(const std::string &sRaw) //explicit to avoid unintentional conv
 _tColor::_tColor(const uint8_t ir, const uint8_t ig, const uint8_t ib, const uint8_t icw, const uint8_t iww, ColorMode imode)
 {
 	mode = imode;
-	//level=ilevel;
+	level = -1;
 	r=ir;
 	g=ig;
 	b=ib;
@@ -70,7 +70,7 @@ void _tColor::fromJSON(const Json::Value &root)
 		b = (uint8_t)root.get("b", 0).asInt();
 		cw = (uint8_t)root.get("cw", 0).asInt();
 		ww = (uint8_t)root.get("ww", 0).asInt();
-		//level = root.get("l", 0).asInt();
+		level = (int8_t)root.get("l", -1).asInt();
 	}
 	catch (...) {
 	}
@@ -101,7 +101,7 @@ Json::Value _tColor::toJSONValue() const
 	if (mode == ColorModeNone || mode > ColorModeLast) return root;
 
 	root["m"] = mode;
-	//root["l"] = level;
+	root["l"] = level;
 	root["t"] = t;
 	root["r"] = r;
 	root["g"] = g;
